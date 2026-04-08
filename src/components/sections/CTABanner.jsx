@@ -47,7 +47,7 @@ export default function CTABanner() {
         <img 
           ref={bgRef}
           src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1600&q=80" 
-          alt="Coffee shop atmosphere" 
+          alt="Roxios Coffee atmosphere" 
           loading="lazy"
           className="w-full h-full object-cover"
         />

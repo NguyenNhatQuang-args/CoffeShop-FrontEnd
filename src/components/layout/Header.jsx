@@ -70,7 +70,7 @@ export default function Header() {
             to="/"
             className="animate-nav-item font-heading text-2xl font-bold tracking-wider text-primary"
           >
-            COFFEE SHOP
+            Roxios Coffee
           </Link>
 
           {/* Desktop Navigation */}

@@ -30,7 +30,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* Brand Info */}
           <div className="footer-col flex flex-col items-start">
-            <h3 className="font-heading text-2xl font-bold mb-6 text-bg">COFFEE SHOP</h3>
+            <h3 className="font-heading text-2xl font-bold mb-6 text-bg">Roxios Coffee</h3>
             <p className="text-sm text-text-muted leading-relaxed mb-6 max-w-sm">
               Trải nghiệm cà phê nguyên bản trong không gian tối giản, thanh lịch. 
               Mang đến cho bạn những khoảnh khắc thư giãn tuyệt vời nhất.
