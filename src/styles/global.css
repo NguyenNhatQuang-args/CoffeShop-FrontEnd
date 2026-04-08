@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  :root {
+    --color-primary: #1a1a1a;
+    --color-secondary: #c8a96e;
+    --color-bg: #fafaf8;
+    --color-bg-dark: #f5f0e8;
+    --color-text: #2d2d2d;
+    --color-text-muted: #8a8a8a;
+  }
+  
+  body {
+    @apply bg-bg text-text font-body antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading text-primary;
+  }
+}
