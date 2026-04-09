@@ -3,6 +3,19 @@ import { authService } from '../services/authService';
 
 export const AuthContext = createContext(null);
 
+function parseJwtPayload(token) {
+  try {
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(atob(base64));
+    return {
+      email: payload.sub || '',
+      role: payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload.role || '',
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     const saved = sessionStorage.getItem('admin_user');
@@ -12,7 +25,19 @@ export function AuthProvider({ children }) {
 
   const login = useCallback(async (email, password) => {
     const res = await authService.login(email, password);
-    const userData = res.data.data || res.data;
+    const resData = res.data;
+
+    if (!resData.success) {
+      throw new Error(resData.message || 'Login failed');
+    }
+
+    // Backend returns { success, data: { token, refreshToken }, message }
+    // Cookies are set automatically by the browser (HttpOnly)
+    // Extract user info from JWT payload
+    const tokenData = resData.data;
+    const parsed = parseJwtPayload(tokenData.token);
+    const userData = parsed || { email };
+
     setUser(userData);
     setIsAuthenticated(true);
     sessionStorage.setItem('admin_user', JSON.stringify(userData));
