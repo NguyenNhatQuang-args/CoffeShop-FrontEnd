@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(dotnet new webapi:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(find:*)",
+      "Bash(npm run:*)"
     ]
   }
 }

@@ -39,10 +39,10 @@ export default function Stores() {
     try {
       if (editItem) {
         await updateStore(editItem.id, form);
-        toast.success('Cap nhat chi nhanh thanh cong');
+        toast.success('Cập nhật chi nhánh thành công');
       } else {
         await createStore(form);
-        toast.success('Them chi nhanh thanh cong');
+        toast.success('Thêm chi nhánh thành công');
       }
       setModalOpen(false);
     } catch (err) {
@@ -54,7 +54,7 @@ export default function Stores() {
     if (!deleteTarget) return;
     try {
       await deleteStore(deleteTarget.id);
-      toast.success('Da xoa chi nhanh');
+      toast.success('Đã xoá chi nhánh');
     } catch (err) {
       toast.error(err.message);
     }
@@ -64,7 +64,7 @@ export default function Stores() {
   const toggleActive = async (store) => {
     try {
       await updateStore(store.id, { ...store, isActive: !store.isActive });
-      toast.success(store.isActive ? 'Da tat chi nhanh' : 'Da bat chi nhanh');
+      toast.success(store.isActive ? 'Đã tắt chi nhánh' : 'Đã bật chi nhánh');
     } catch (err) {
       toast.error(err.message);
     }
@@ -74,15 +74,15 @@ export default function Stores() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Chi nhanh</h1>
-          <p className="text-sm text-gray-500 mt-1">{stores.length} chi nhanh</p>
+          <h1 className="text-2xl font-bold text-gray-900">Chi nhánh</h1>
+          <p className="text-sm text-gray-500 mt-1">{stores.length} chi nhánh</p>
         </div>
         <button
           onClick={openCreate}
           className="flex items-center gap-2 px-4 py-2.5 bg-[#1a1a1a] text-white text-sm font-medium rounded-lg hover:bg-[#2a2a2a] transition-colors"
         >
           <Plus size={16} />
-          Them chi nhanh
+          Thêm chi nhánh
         </button>
       </div>
 
@@ -93,18 +93,18 @@ export default function Stores() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Chi nhanh</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Dia chi</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">SDT</th>
-                <th className="text-center py-3 px-4 font-medium text-gray-500">Trang thai</th>
-                <th className="text-right py-3 px-4 font-medium text-gray-500">Thao tac</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">Chi nhánh</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">Địa chỉ</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">SĐT</th>
+                <th className="text-center py-3 px-4 font-medium text-gray-500">Trạng thái</th>
+                <th className="text-right py-3 px-4 font-medium text-gray-500">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {stores.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="py-12 text-center text-gray-400">
-                    Chua co chi nhanh nao
+                    Chưa có chi nhánh nào
                   </td>
                 </tr>
               ) : (
@@ -127,7 +127,7 @@ export default function Stores() {
                             : 'bg-red-50 text-red-600 hover:bg-red-100'
                         }`}
                       >
-                        {store.isActive ? 'Hoat dong' : 'Tam dong'}
+                        {store.isActive ? 'Hoạt động' : 'Tạm đóng'}
                       </button>
                     </td>
                     <td className="py-3 px-4">
@@ -161,7 +161,7 @@ export default function Stores() {
           <div className="relative bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-bold text-gray-900">
-                {editItem ? 'Sua chi nhanh' : 'Them chi nhanh'}
+                {editItem ? 'Sửa chi nhánh' : 'Thêm chi nhánh'}
               </h3>
               <button onClick={() => setModalOpen(false)} className="p-1 text-gray-400 hover:text-gray-600">
                 <X size={20} />
@@ -170,7 +170,7 @@ export default function Stores() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Ten chi nhanh *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tên chi nhánh *</label>
                 <input
                   type="text"
                   value={form.name}
@@ -180,7 +180,7 @@ export default function Stores() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Dia chi *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Địa chỉ *</label>
                 <input
                   type="text"
                   value={form.address}
@@ -191,7 +191,7 @@ export default function Stores() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">So dien thoai</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Số điện thoại</label>
                   <input
                     type="text"
                     value={form.phone}
@@ -200,7 +200,7 @@ export default function Stores() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Gio hoat dong</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Giờ hoạt động</label>
                   <input
                     type="text"
                     value={form.openingHours}
@@ -217,7 +217,7 @@ export default function Stores() {
                   onChange={(e) => setForm((p) => ({ ...p, isActive: e.target.checked }))}
                   className="w-4 h-4 accent-[#c8a96e] rounded"
                 />
-                <span className="text-sm">Dang hoat dong</span>
+                <span className="text-sm">Đang hoạt động</span>
               </label>
               <div className="flex justify-end gap-3 pt-2">
                 <button
@@ -225,7 +225,7 @@ export default function Stores() {
                   onClick={() => setModalOpen(false)}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
                 >
-                  Huy
+                  Huỷ
                 </button>
                 <button
                   type="submit"
@@ -233,7 +233,7 @@ export default function Stores() {
                   className="px-4 py-2 text-sm font-medium text-white bg-[#1a1a1a] rounded-lg hover:bg-[#2a2a2a] disabled:opacity-60 flex items-center gap-2"
                 >
                   {actionLoading && <Loader2 size={14} className="animate-spin" />}
-                  {editItem ? 'Cap nhat' : 'Them moi'}
+                  {editItem ? 'Cập nhật' : 'Thêm mới'}
                 </button>
               </div>
             </form>
@@ -243,8 +243,8 @@ export default function Stores() {
 
       <ConfirmDialog
         open={!!deleteTarget}
-        title="Xoa chi nhanh"
-        message={`Ban co chac muon xoa "${deleteTarget?.name}"?`}
+        title="Xoá chi nhánh"
+        message={`Bạn có chắc muốn xoá "${deleteTarget?.name}"?`}
         loading={actionLoading}
         onConfirm={handleDelete}
         onCancel={() => setDeleteTarget(null)}

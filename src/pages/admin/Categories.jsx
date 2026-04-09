@@ -60,10 +60,10 @@ export default function Categories() {
     try {
       if (editItem) {
         await updateCategory(editItem.id, formData);
-        toast.success('Cap nhat danh muc thanh cong');
+        toast.success('Cập nhật danh mục thành công');
       } else {
         await createCategory(formData);
-        toast.success('Them danh muc thanh cong');
+        toast.success('Thêm danh mục thành công');
       }
       setModalOpen(false);
     } catch (err) {
@@ -75,7 +75,7 @@ export default function Categories() {
     if (!deleteTarget) return;
     try {
       await deleteCategory(deleteTarget.id);
-      toast.success('Da xoa danh muc');
+      toast.success('Đã xoá danh mục');
     } catch (err) {
       toast.error(err.message);
     }
@@ -86,15 +86,15 @@ export default function Categories() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Danh muc</h1>
-          <p className="text-sm text-gray-500 mt-1">{categories.length} danh muc</p>
+          <h1 className="text-2xl font-bold text-gray-900">Danh mục</h1>
+          <p className="text-sm text-gray-500 mt-1">{categories.length} danh mục</p>
         </div>
         <button
           onClick={openCreate}
           className="flex items-center gap-2 px-4 py-2.5 bg-[#1a1a1a] text-white text-sm font-medium rounded-lg hover:bg-[#2a2a2a] transition-colors"
         >
           <Plus size={16} />
-          Them danh muc
+          Thêm danh mục
         </button>
       </div>
 
@@ -105,17 +105,17 @@ export default function Categories() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Danh muc</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">Danh mục</th>
                 <th className="text-left py-3 px-4 font-medium text-gray-500">Slug</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Mo ta</th>
-                <th className="text-right py-3 px-4 font-medium text-gray-500">Thao tac</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">Mô tả</th>
+                <th className="text-right py-3 px-4 font-medium text-gray-500">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {categories.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="py-12 text-center text-gray-400">
-                    Chua co danh muc nao
+                    Chưa có danh mục nào
                   </td>
                 </tr>
               ) : (
@@ -162,7 +162,7 @@ export default function Categories() {
           <div className="relative bg-white rounded-lg shadow-xl w-full max-w-lg p-6">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-bold text-gray-900">
-                {editItem ? 'Sua danh muc' : 'Them danh muc'}
+                {editItem ? 'Sửa danh mục' : 'Thêm danh mục'}
               </h3>
               <button onClick={() => setModalOpen(false)} className="p-1 text-gray-400 hover:text-gray-600">
                 <X size={20} />
@@ -171,7 +171,7 @@ export default function Categories() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Ten *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tên *</label>
                 <input
                   type="text"
                   value={form.name}
@@ -190,7 +190,7 @@ export default function Categories() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Mo ta</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
                 <textarea
                   value={form.description}
                   onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
@@ -199,7 +199,7 @@ export default function Categories() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Hinh anh</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Hình ảnh</label>
                 {form.imageUrl ? (
                   <div className="relative w-24 h-24 rounded-lg overflow-hidden">
                     <img src={form.imageUrl} alt="" className="w-full h-full object-cover" />
@@ -214,7 +214,7 @@ export default function Categories() {
                 ) : (
                   <label className="flex items-center gap-2 px-4 py-2 border border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#c8a96e] text-sm text-gray-500">
                     {uploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
-                    {uploading ? 'Dang upload...' : 'Chon anh'}
+                    {uploading ? 'Đang upload...' : 'Chọn ảnh'}
                     <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                   </label>
                 )}
@@ -225,7 +225,7 @@ export default function Categories() {
                   onClick={() => setModalOpen(false)}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
                 >
-                  Huy
+                  Huỷ
                 </button>
                 <button
                   type="submit"
@@ -233,7 +233,7 @@ export default function Categories() {
                   className="px-4 py-2 text-sm font-medium text-white bg-[#1a1a1a] rounded-lg hover:bg-[#2a2a2a] disabled:opacity-60 flex items-center gap-2"
                 >
                   {actionLoading && <Loader2 size={14} className="animate-spin" />}
-                  {editItem ? 'Cap nhat' : 'Them moi'}
+                  {editItem ? 'Cập nhật' : 'Thêm mới'}
                 </button>
               </div>
             </form>
@@ -243,8 +243,8 @@ export default function Categories() {
 
       <ConfirmDialog
         open={!!deleteTarget}
-        title="Xoa danh muc"
-        message={`Ban co chac muon xoa "${deleteTarget?.name}"?`}
+        title="Xoá danh mục"
+        message={`Bạn có chắc muốn xoá "${deleteTarget?.name}"?`}
         loading={actionLoading}
         onConfirm={handleDelete}
         onCancel={() => setDeleteTarget(null)}

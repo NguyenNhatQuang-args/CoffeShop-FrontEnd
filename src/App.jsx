@@ -24,10 +24,10 @@ function App() {
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               <Route path="menu" element={<Menu />} />
-              <Route path="about" element={<div className="min-h-screen pt-32 text-center text-2xl font-heading">Trang Gioi Thieu (Coming Soon)</div>} />
+              <Route path="about" element={<div className="min-h-screen pt-32 text-center text-2xl font-heading">Trang Giới Thiệu (Coming Soon)</div>} />
               <Route path="blog" element={<div className="min-h-screen pt-32 text-center text-2xl font-heading">Trang Blog (Coming Soon)</div>} />
-              <Route path="lien-he" element={<div className="min-h-screen pt-32 text-center text-2xl font-heading">Trang Lien He (Coming Soon)</div>} />
-              <Route path="*" element={<div className="min-h-screen pt-32 text-center text-2xl font-heading">404 - Khong tim thay trang</div>} />
+              <Route path="lien-he" element={<div className="min-h-screen pt-32 text-center text-2xl font-heading">Trang Liên Hệ (Coming Soon)</div>} />
+              <Route path="*" element={<div className="min-h-screen pt-32 text-center text-2xl font-heading">404 - Không tìm thấy trang</div>} />
             </Route>
 
             {/* Admin */}

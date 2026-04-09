@@ -13,14 +13,14 @@ export default function ConfirmDialog({ open, title, message, onConfirm, onCance
             disabled={loading}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
           >
-            Huy
+            Huỷ
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
             className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
           >
-            {loading ? 'Dang xoa...' : 'Xac nhan'}
+            {loading ? 'Đang xoá...' : 'Xác nhận'}
           </button>
         </div>
       </div>

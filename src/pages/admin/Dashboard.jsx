@@ -8,10 +8,10 @@ import { storeService } from '../../services/storeService';
 import { CardSkeleton } from '../../components/admin/Skeleton';
 
 const ACTIVITY_FEED = [
-  { id: 1, text: 'San pham "Cappuccino" da duoc cap nhat', time: '5 phut truoc' },
-  { id: 2, text: 'Bai viet moi "Arabica vs Robusta" da dang', time: '1 gio truoc' },
-  { id: 3, text: 'Danh muc "Cold Brew" duoc them san pham', time: '2 gio truoc' },
-  { id: 4, text: 'Chi nhanh Quan 1 cap nhat gio hoat dong', time: '3 gio truoc' },
+  { id: 1, text: 'Sản phẩm "Cappuccino" đã được cập nhật', time: '5 phút trước' },
+  { id: 2, text: 'Bài viết mới "Arabica vs Robusta" đã đăng', time: '1 giờ trước' },
+  { id: 3, text: 'Danh mục "Cold Brew" được thêm sản phẩm', time: '2 giờ trước' },
+  { id: 4, text: 'Chi nhánh Quận 1 cập nhật giờ hoạt động', time: '3 giờ trước' },
 ];
 
 const REVENUE_DATA = [
@@ -67,17 +67,17 @@ export default function Dashboard() {
   const maxRevenue = Math.max(...REVENUE_DATA.map((d) => d.value));
 
   const overviewCards = [
-    { label: 'San pham', value: stats?.products, icon: Coffee, color: 'bg-amber-50 text-amber-600', link: '/admin/products' },
-    { label: 'Danh muc', value: stats?.categories, icon: FolderTree, color: 'bg-blue-50 text-blue-600', link: '/admin/categories' },
-    { label: 'Bai viet', value: stats?.posts, icon: FileText, color: 'bg-green-50 text-green-600', link: '/admin/blog' },
-    { label: 'Chi nhanh', value: stats?.stores, icon: MapPin, color: 'bg-purple-50 text-purple-600', link: '/admin/stores' },
+    { label: 'Sản phẩm', value: stats?.products, icon: Coffee, color: 'bg-amber-50 text-amber-600', link: '/admin/products' },
+    { label: 'Danh mục', value: stats?.categories, icon: FolderTree, color: 'bg-blue-50 text-blue-600', link: '/admin/categories' },
+    { label: 'Bài viết', value: stats?.posts, icon: FileText, color: 'bg-green-50 text-green-600', link: '/admin/blog' },
+    { label: 'Chi nhánh', value: stats?.stores, icon: MapPin, color: 'bg-purple-50 text-purple-600', link: '/admin/stores' },
   ];
 
   return (
     <div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-sm text-gray-500 mt-1">Tong quan he thong quan ly</p>
+        <p className="text-sm text-gray-500 mt-1">Tổng quan hệ thống quản lý</p>
       </div>
 
       {/* Overview Cards */}
@@ -108,8 +108,8 @@ export default function Dashboard() {
         <div className="lg:col-span-2 bg-white rounded-lg p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="font-bold text-gray-900">Doanh thu tuan nay</h3>
-              <p className="text-xs text-gray-500 mt-1">Du lieu minh hoa (chua co API)</p>
+              <h3 className="font-bold text-gray-900">Doanh thu tuần này</h3>
+              <p className="text-xs text-gray-500 mt-1">Dữ liệu minh hoạ (chưa có API)</p>
             </div>
             <TrendingUp size={20} className="text-green-500" />
           </div>
@@ -136,8 +136,8 @@ export default function Dashboard() {
 
         {/* Activity Feed (fake data) */}
         <div className="bg-white rounded-lg p-6 shadow-sm">
-          <h3 className="font-bold text-gray-900 mb-4">Hoat dong gan day</h3>
-          <p className="text-xs text-gray-400 mb-4">Du lieu minh hoa</p>
+          <h3 className="font-bold text-gray-900 mb-4">Hoạt động gần đây</h3>
+          <p className="text-xs text-gray-400 mb-4">Dữ liệu minh hoạ</p>
           <div className="space-y-4">
             {ACTIVITY_FEED.map((a) => (
               <div key={a.id} className="flex gap-3">
@@ -156,18 +156,18 @@ export default function Dashboard() {
       {topProducts.length > 0 && (
         <div className="mt-6 bg-white rounded-lg p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-gray-900">San pham noi bat</h3>
+            <h3 className="font-bold text-gray-900">Sản phẩm nổi bật</h3>
             <Link to="/admin/products" className="text-sm text-[#c8a96e] hover:underline">
-              Xem tat ca
+              Xem tất cả
             </Link>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100">
-                  <th className="text-left py-3 px-2 font-medium text-gray-500">San pham</th>
-                  <th className="text-left py-3 px-2 font-medium text-gray-500">Danh muc</th>
-                  <th className="text-right py-3 px-2 font-medium text-gray-500">Gia</th>
+                  <th className="text-left py-3 px-2 font-medium text-gray-500">Sản phẩm</th>
+                  <th className="text-left py-3 px-2 font-medium text-gray-500">Danh mục</th>
+                  <th className="text-right py-3 px-2 font-medium text-gray-500">Giá</th>
                 </tr>
               </thead>
               <tbody>
@@ -181,7 +181,7 @@ export default function Dashboard() {
                     </td>
                     <td className="py-3 px-2 text-gray-500">{p.categoryName || p.category}</td>
                     <td className="py-3 px-2 text-right text-[#c8a96e] font-medium">
-                      {p.price?.toLocaleString('vi-VN')} d
+                      {p.price?.toLocaleString('vi-VN')} đ
                     </td>
                   </tr>
                 ))}

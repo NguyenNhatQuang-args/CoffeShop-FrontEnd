@@ -63,7 +63,7 @@ export default function BlogForm() {
       const res = await uploadService.uploadBlog(file);
       const url = res.data.data?.url ?? res.data.url ?? res.data;
       handleChange('thumbnailUrl', url);
-      toast.success('Upload anh thanh cong');
+      toast.success('Upload ảnh thành công');
     } catch (err) {
       toast.error(handleApiError(err));
     } finally {
@@ -77,10 +77,10 @@ export default function BlogForm() {
     try {
       if (isEdit) {
         await blogService.update(postId, form);
-        toast.success('Cap nhat bai viet thanh cong');
+        toast.success('Cập nhật bài viết thành công');
       } else {
         await blogService.create(form);
-        toast.success('Them bai viet thanh cong');
+        toast.success('Thêm bài viết thành công');
       }
       navigate('/admin/blog');
     } catch (err) {
@@ -99,16 +99,16 @@ export default function BlogForm() {
         className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 mb-6 transition-colors"
       >
         <ArrowLeft size={16} />
-        Quay lai
+        Quay lại
       </button>
 
       <h1 className="text-2xl font-bold text-gray-900 mb-6">
-        {isEdit ? 'Sua bai viet' : 'Viet bai moi'}
+        {isEdit ? 'Sửa bài viết' : 'Viết bài mới'}
       </h1>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-sm p-6 space-y-5 max-w-3xl">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Tieu de *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Tiêu đề *</label>
           <input
             type="text"
             value={form.title}
@@ -129,7 +129,7 @@ export default function BlogForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Tom tat</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Tóm tắt</label>
           <textarea
             value={form.excerpt}
             onChange={(e) => handleChange('excerpt', e.target.value)}
@@ -139,7 +139,7 @@ export default function BlogForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Noi dung *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Nội dung *</label>
           <textarea
             value={form.content}
             onChange={(e) => handleChange('content', e.target.value)}
@@ -151,7 +151,7 @@ export default function BlogForm() {
 
         {/* Thumbnail */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Anh dai dien</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Ảnh đại diện</label>
           {form.thumbnailUrl ? (
             <div className="relative w-48 h-32 rounded-lg overflow-hidden bg-gray-100">
               <img src={form.thumbnailUrl} alt="" className="w-full h-full object-cover" />
@@ -166,7 +166,7 @@ export default function BlogForm() {
           ) : (
             <label className="flex items-center gap-2 px-4 py-2 border border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#c8a96e] text-sm text-gray-500 w-fit">
               {uploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
-              {uploading ? 'Dang upload...' : 'Chon anh'}
+              {uploading ? 'Đang upload...' : 'Chọn ảnh'}
               <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
             </label>
           )}
@@ -179,7 +179,7 @@ export default function BlogForm() {
             onChange={(e) => handleChange('isPublished', e.target.checked)}
             className="w-4 h-4 accent-[#c8a96e] rounded"
           />
-          <span className="text-sm">Dang ngay</span>
+          <span className="text-sm">Đăng ngay</span>
         </label>
 
         <div className="pt-4 border-t border-gray-100 flex gap-3">
@@ -189,14 +189,14 @@ export default function BlogForm() {
             className="px-6 py-2.5 bg-[#1a1a1a] text-white text-sm font-medium rounded-lg hover:bg-[#2a2a2a] disabled:opacity-60 flex items-center gap-2 transition-colors"
           >
             {submitting && <Loader2 size={14} className="animate-spin" />}
-            {isEdit ? 'Cap nhat' : 'Dang bai'}
+            {isEdit ? 'Cập nhật' : 'Đăng bài'}
           </button>
           <button
             type="button"
             onClick={() => navigate('/admin/blog')}
             className="px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
           >
-            Huy
+            Huỷ
           </button>
         </div>
       </form>

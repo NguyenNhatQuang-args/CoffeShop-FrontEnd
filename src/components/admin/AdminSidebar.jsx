@@ -4,10 +4,10 @@ import { useAuth } from '../../hooks/useAuth';
 
 const NAV_ITEMS = [
   { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
-  { name: 'San pham', path: '/admin/products', icon: Coffee },
-  { name: 'Danh muc', path: '/admin/categories', icon: FolderTree },
+  { name: 'Sản phẩm', path: '/admin/products', icon: Coffee },
+  { name: 'Danh mục', path: '/admin/categories', icon: FolderTree },
   { name: 'Blog', path: '/admin/blog', icon: FileText },
-  { name: 'Chi nhanh', path: '/admin/stores', icon: MapPin },
+  { name: 'Chi nhánh', path: '/admin/stores', icon: MapPin },
 ];
 
 export default function AdminSidebar() {
@@ -52,7 +52,7 @@ export default function AdminSidebar() {
           className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-red-500/20 hover:text-red-400 transition-colors"
         >
           <LogOut size={18} />
-          Dang xuat
+          Đăng xuất
         </button>
       </div>
     </aside>

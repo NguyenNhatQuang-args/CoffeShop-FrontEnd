@@ -6,11 +6,11 @@ import { useToast } from '../../hooks/useToast';
 import { TableSkeleton } from '../../components/admin/Skeleton';
 import ConfirmDialog from '../../components/admin/ConfirmDialog';
 
-const TABS = ['Tat ca', 'Da dang', 'Ban nhap'];
+const TABS = ['Tất cả', 'Đã đăng', 'Bản nháp'];
 
 export default function Blog() {
   const [page, setPage] = useState(1);
-  const [activeTab, setActiveTab] = useState('Tat ca');
+  const [activeTab, setActiveTab] = useState('Tất cả');
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   const toast = useToast();
@@ -18,9 +18,9 @@ export default function Blog() {
 
   const totalPages = Math.ceil(total / 10);
 
-  const filteredPosts = activeTab === 'Tat ca'
+  const filteredPosts = activeTab === 'Tất cả'
     ? posts
-    : activeTab === 'Da dang'
+    : activeTab === 'Đã đăng'
     ? posts.filter((p) => p.isPublished !== false)
     : posts.filter((p) => p.isPublished === false);
 
@@ -28,7 +28,7 @@ export default function Blog() {
     if (!deleteTarget) return;
     try {
       await deletePost(deleteTarget.id);
-      toast.success('Da xoa bai viet');
+      toast.success('Đã xoá bài viết');
     } catch (err) {
       toast.error(err.message);
     }
@@ -40,14 +40,14 @@ export default function Blog() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Blog</h1>
-          <p className="text-sm text-gray-500 mt-1">{total} bai viet</p>
+          <p className="text-sm text-gray-500 mt-1">{total} bài viết</p>
         </div>
         <Link
           to="/admin/blog/new"
           className="flex items-center gap-2 px-4 py-2.5 bg-[#1a1a1a] text-white text-sm font-medium rounded-lg hover:bg-[#2a2a2a] transition-colors"
         >
           <Plus size={16} />
-          Viet bai moi
+          Viết bài mới
         </Link>
       </div>
 
@@ -75,17 +75,17 @@ export default function Blog() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Tieu de</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-500">Ngay tao</th>
-                <th className="text-center py-3 px-4 font-medium text-gray-500">Trang thai</th>
-                <th className="text-right py-3 px-4 font-medium text-gray-500">Thao tac</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">Tiêu đề</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-500">Ngày tạo</th>
+                <th className="text-center py-3 px-4 font-medium text-gray-500">Trạng thái</th>
+                <th className="text-right py-3 px-4 font-medium text-gray-500">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {filteredPosts.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="py-12 text-center text-gray-400">
-                    Khong co bai viet nao
+                    Không có bài viết nào
                   </td>
                 </tr>
               ) : (
@@ -113,7 +113,7 @@ export default function Blog() {
                             : 'bg-yellow-50 text-yellow-700'
                         }`}
                       >
-                        {post.isPublished !== false ? 'Da dang' : 'Ban nhap'}
+                        {post.isPublished !== false ? 'Đã đăng' : 'Bản nháp'}
                       </span>
                     </td>
                     <td className="py-3 px-4">
@@ -147,7 +147,7 @@ export default function Blog() {
                   disabled={page === 1}
                   className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
                 >
-                  Truoc
+                  Trước
                 </button>
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
@@ -164,8 +164,8 @@ export default function Blog() {
 
       <ConfirmDialog
         open={!!deleteTarget}
-        title="Xoa bai viet"
-        message={`Ban co chac muon xoa "${deleteTarget?.title}"?`}
+        title="Xoá bài viết"
+        message={`Bạn có chắc muốn xoá "${deleteTarget?.title}"?`}
         loading={actionLoading}
         onConfirm={handleDelete}
         onCancel={() => setDeleteTarget(null)}

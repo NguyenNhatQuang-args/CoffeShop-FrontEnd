@@ -40,7 +40,7 @@ export default function Products() {
     if (!deleteTarget) return;
     try {
       await deleteProduct(deleteTarget.id);
-      toast.success('Da xoa san pham');
+      toast.success('Đã xoá sản phẩm');
     } catch (err) {
       toast.error(err.message);
     }
@@ -52,7 +52,7 @@ export default function Products() {
       const formData = new FormData();
       formData.append('isAvailable', !product.isAvailable);
       await productService.update(product.id, formData);
-      toast.success(product.isAvailable ? 'Da an san pham' : 'Da hien san pham');
+      toast.success(product.isAvailable ? 'Đã ẩn sản phẩm' : 'Đã hiện sản phẩm');
       refetch();
     } catch (err) {
       toast.error(handleApiError(err));
@@ -60,21 +60,21 @@ export default function Products() {
   }, [refetch, toast]);
 
   const formatPrice = (price) =>
-    (price || 0).toLocaleString('vi-VN') + ' d';
+    (price || 0).toLocaleString('vi-VN') + ' đ';
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">San pham</h1>
-          <p className="text-sm text-gray-500 mt-1">{total} san pham</p>
+          <h1 className="text-2xl font-bold text-gray-900">Sản phẩm</h1>
+          <p className="text-sm text-gray-500 mt-1">{total} sản phẩm</p>
         </div>
         <Link
           to="/admin/products/new"
           className="flex items-center gap-2 px-4 py-2.5 bg-[#1a1a1a] text-white text-sm font-medium rounded-lg hover:bg-[#2a2a2a] transition-colors"
         >
           <Plus size={16} />
-          Them san pham
+          Thêm sản phẩm
         </Link>
       </div>
 
@@ -84,7 +84,7 @@ export default function Products() {
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
-            placeholder="Tim san pham..."
+            placeholder="Tìm sản phẩm..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#c8a96e] focus:border-transparent"
@@ -95,7 +95,7 @@ export default function Products() {
           onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}
           className="px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#c8a96e]"
         >
-          <option value="">Tat ca danh muc</option>
+          <option value="">Tất cả danh mục</option>
           {categories.map((c) => (
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
@@ -111,18 +111,18 @@ export default function Products() {
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b border-gray-100">
                 <tr>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">San pham</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Danh muc</th>
-                  <th className="text-right py-3 px-4 font-medium text-gray-500">Gia</th>
-                  <th className="text-center py-3 px-4 font-medium text-gray-500">Trang thai</th>
-                  <th className="text-right py-3 px-4 font-medium text-gray-500">Thao tac</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500">Sản phẩm</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-500">Danh mục</th>
+                  <th className="text-right py-3 px-4 font-medium text-gray-500">Giá</th>
+                  <th className="text-center py-3 px-4 font-medium text-gray-500">Trạng thái</th>
+                  <th className="text-right py-3 px-4 font-medium text-gray-500">Thao tác</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {products.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="py-12 text-center text-gray-400">
-                      Khong tim thay san pham nao
+                      Không tìm thấy sản phẩm nào
                     </td>
                   </tr>
                 ) : (
@@ -157,7 +157,7 @@ export default function Products() {
                           }`}
                         >
                           {p.isAvailable ? <Eye size={12} /> : <EyeOff size={12} />}
-                          {p.isAvailable ? 'Con hang' : 'Het hang'}
+                          {p.isAvailable ? 'Còn hàng' : 'Hết hàng'}
                         </button>
                       </td>
                       <td className="py-3 px-4">
@@ -195,7 +195,7 @@ export default function Products() {
                   disabled={page === 1}
                   className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
                 >
-                  Truoc
+                  Trước
                 </button>
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
@@ -212,8 +212,8 @@ export default function Products() {
 
       <ConfirmDialog
         open={!!deleteTarget}
-        title="Xoa san pham"
-        message={`Ban co chac muon xoa "${deleteTarget?.name}"? Hanh dong nay khong the hoan tac.`}
+        title="Xoá sản phẩm"
+        message={`Bạn có chắc muốn xoá "${deleteTarget?.name}"? Hành động này không thể hoàn tác.`}
         loading={actionLoading}
         onConfirm={handleDelete}
         onCancel={() => setDeleteTarget(null)}

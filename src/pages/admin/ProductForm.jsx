@@ -71,7 +71,7 @@ export default function ProductForm() {
       const res = await uploadService.uploadProduct(file);
       const url = res.data.data?.url ?? res.data.url ?? res.data;
       handleChange('imageUrl', url);
-      toast.success('Upload anh thanh cong');
+      toast.success('Upload ảnh thành công');
     } catch (err) {
       toast.error(handleApiError(err));
     } finally {
@@ -97,10 +97,10 @@ export default function ProductForm() {
     try {
       if (isEdit) {
         await productService.update(productId, formData);
-        toast.success('Cap nhat san pham thanh cong');
+        toast.success('Cập nhật sản phẩm thành công');
       } else {
         await productService.create(formData);
-        toast.success('Them san pham thanh cong');
+        toast.success('Thêm sản phẩm thành công');
       }
       navigate('/admin/products');
     } catch (err) {
@@ -119,17 +119,17 @@ export default function ProductForm() {
         className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 mb-6 transition-colors"
       >
         <ArrowLeft size={16} />
-        Quay lai
+        Quay lại
       </button>
 
       <h1 className="text-2xl font-bold text-gray-900 mb-6">
-        {isEdit ? 'Sua san pham' : 'Them san pham moi'}
+        {isEdit ? 'Sửa sản phẩm' : 'Thêm sản phẩm mới'}
       </h1>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-sm p-6 space-y-5 max-w-3xl">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Ten san pham *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Tên sản phẩm *</label>
             <input
               type="text"
               value={form.name}
@@ -145,13 +145,13 @@ export default function ProductForm() {
               value={form.slug}
               onChange={(e) => handleChange('slug', e.target.value)}
               className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#c8a96e]"
-              placeholder="tu-dong-tao-neu-de-trong"
+              placeholder="tự-động-tạo-nếu-để-trống"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Mo ta</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Mô tả</label>
           <textarea
             value={form.description}
             onChange={(e) => handleChange('description', e.target.value)}
@@ -162,7 +162,7 @@ export default function ProductForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Gia (VND) *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Giá (VND) *</label>
             <input
               type="number"
               value={form.price}
@@ -173,14 +173,14 @@ export default function ProductForm() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Danh muc *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Danh mục *</label>
             <select
               value={form.categoryId}
               onChange={(e) => handleChange('categoryId', e.target.value)}
               required
               className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#c8a96e]"
             >
-              <option value="">Chon danh muc</option>
+              <option value="">Chọn danh mục</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
@@ -193,14 +193,14 @@ export default function ProductForm() {
               value={form.tag}
               onChange={(e) => handleChange('tag', e.target.value)}
               className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#c8a96e]"
-              placeholder="BEST SELLER, MOI, ..."
+              placeholder="BEST SELLER, MỚI, ..."
             />
           </div>
         </div>
 
         {/* Image upload */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Hinh anh</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Hình ảnh</label>
           {form.imageUrl ? (
             <div className="relative w-40 h-40 rounded-lg overflow-hidden bg-gray-100">
               <img src={form.imageUrl} alt="" className="w-full h-full object-cover" />
@@ -219,7 +219,7 @@ export default function ProductForm() {
               ) : (
                 <>
                   <Upload size={24} className="text-gray-400 mb-2" />
-                  <span className="text-xs text-gray-500">Chon anh</span>
+                  <span className="text-xs text-gray-500">Chọn ảnh</span>
                 </>
               )}
               <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
@@ -236,7 +236,7 @@ export default function ProductForm() {
               onChange={(e) => handleChange('isAvailable', e.target.checked)}
               className="w-4 h-4 accent-[#c8a96e] rounded"
             />
-            <span className="text-sm">Con hang</span>
+            <span className="text-sm">Còn hàng</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -245,7 +245,7 @@ export default function ProductForm() {
               onChange={(e) => handleChange('isFeature', e.target.checked)}
               className="w-4 h-4 accent-[#c8a96e] rounded"
             />
-            <span className="text-sm">Noi bat</span>
+            <span className="text-sm">Nổi bật</span>
           </label>
         </div>
 
@@ -256,14 +256,14 @@ export default function ProductForm() {
             className="px-6 py-2.5 bg-[#1a1a1a] text-white text-sm font-medium rounded-lg hover:bg-[#2a2a2a] disabled:opacity-60 flex items-center gap-2 transition-colors"
           >
             {submitting && <Loader2 size={14} className="animate-spin" />}
-            {isEdit ? 'Cap nhat' : 'Them moi'}
+            {isEdit ? 'Cập nhật' : 'Thêm mới'}
           </button>
           <button
             type="button"
             onClick={() => navigate('/admin/products')}
             className="px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
           >
-            Huy
+            Huỷ
           </button>
         </div>
       </form>
