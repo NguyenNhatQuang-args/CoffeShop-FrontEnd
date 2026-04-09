@@ -46,7 +46,7 @@ export const MENU_PRODUCTS = [
     description:"Vanilla latte với caramel drizzle trên đỉnh",
     price:75000, sizes:[{name:"M",price:75000},{name:"L",price:85000}],
     temps:["Nóng","Đá"], tag:"ĐẶC BIỆT", isAvailable:true,
-    image:"https://lyoncoffee.com.vn/wp-content/uploads/caramel-macchiato.jpg" },
+    image:"https://i.pinimg.com/1200x/9c/e2/a1/9ce2a162d2ebb25041723b0f38da3038.jpg" },
   { id:8, name:"Flat White", slug:"flat-white", category:"espresso",
     description:"Double espresso với microfoam sữa, mạnh hơn latte",
     price:70000, sizes:[{name:"M",price:70000}],

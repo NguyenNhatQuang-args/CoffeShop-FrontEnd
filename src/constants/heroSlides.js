@@ -40,7 +40,7 @@ export const SLIDES = [
     tag: "ĐẶC BIỆT",
     title: "Caramel Macchiato",
     description: "Lớp caramel béo ngậy quyện cùng espresso thơm nồng",
-    image: "https://images.unsplash.com/photo-1485808191679-5f86510bd9d4?w=1600&q=80",
+    image: "https://i.pinimg.com/1200x/9c/e2/a1/9ce2a162d2ebb25041723b0f38da3038.jpg",
     btnPrimary: "Xem ngay",
     btnSecondary: "Xem thực đơn"
   }

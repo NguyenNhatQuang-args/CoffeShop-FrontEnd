@@ -13,7 +13,7 @@ export const FEATURED_PRODUCTS = [
     image:"https://images.unsplash.com/photo-1515823064-d6e0c04616a7?w=600&q=80" },
   { id:5, name:"Caramel Macchiato", category:"Espresso", price:70000,
     tag:"ĐẶC BIỆT",
-    image:"https://images.unsplash.com/photo-1485808191679-5f86510bd9d4?w=600&q=80" },
+    image:"https://i.pinimg.com/1200x/9c/e2/a1/9ce2a162d2ebb25041723b0f38da3038.jpg" },
   { id:6, name:"Bạc Xỉu", category:"Cà Phê Việt", price:40000,
     tag:"TRUYỀN THỐNG",
     image:"https://images.unsplash.com/photo-1498804103079-a6351b050096?w=600&q=80" },
