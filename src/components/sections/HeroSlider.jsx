@@ -30,7 +30,7 @@ export default function HeroSlider() {
       // 1.5s = 1500ms theo yêu cầu
       timerRef.current = setInterval(() => {
         nextSlide();
-      }, 1500);
+      }, 3000);
     }
 
     return () => {
@@ -57,7 +57,7 @@ export default function HeroSlider() {
         gsap.to(`.slide-${idx}`, {
           opacity: 0,
           scale: 1.05,
-          duration: 1,
+          duration: 1.5,
           ease: 'power2.inOut'
         });
       }

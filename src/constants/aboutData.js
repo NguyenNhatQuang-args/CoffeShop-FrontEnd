@@ -5,9 +5,9 @@ export const ABOUT = {
   image: "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=1200&q=80",
   image2: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80",
   stats: [
-    { number: 10, suffix: "+", label: "Năm kinh nghiệm" },
-    { number: 50, suffix: "+", label: "Chi nhánh" },
-    { number: 200, suffix: "+", label: "Thức uống" },
-    { number: 1, suffix: "M+", label: "Khách hàng" },
+    { number: 3, suffix: "+", label: "Năm kinh nghiệm" },
+    { number: 3, suffix: "", label: "Chi nhánh" },
+    { number: 20, suffix: "+", label: "Thức uống" },
+    { number: 5, suffix: "k+", label: "Khách hàng" },
   ]
 };
