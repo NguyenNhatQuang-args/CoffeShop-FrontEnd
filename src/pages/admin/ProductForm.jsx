@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Upload, X, Loader2, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Plus, Trash2, X } from 'lucide-react';
 import { productService } from '../../services/productService';
 import { uploadService } from '../../services/uploadService';
 import { useCategories } from '../../hooks/useCategories';
 import { useToast } from '../../hooks/useToast';
 import { handleApiError } from '../../utils/handleApiError';
 import { FormSkeleton } from '../../components/admin/Skeleton';
+import ImageInput from '../../components/admin/ImageInput';
 
 const SIZE_OPTIONS = ['S', 'M', 'L'];
 const TEMP_OPTIONS = ['Hot', 'Cold', 'Both'];
@@ -22,8 +23,8 @@ export default function ProductForm() {
 
   const [loading, setLoading] = useState(isEdit);
   const [submitting, setSubmitting] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [productId, setProductId] = useState(null);
+  const imageRef = useRef();
   const [form, setForm] = useState({
     name: '',
     slug: '',
@@ -109,23 +110,6 @@ export default function ProductForm() {
     }
   };
 
-  // --- Image ---
-  const handleImageUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    try {
-      const res = await uploadService.uploadProduct(file);
-      const url = res.data.data?.url ?? res.data.url ?? res.data;
-      handleChange('imageUrl', url);
-      toast.success('Upload ảnh thành công');
-    } catch (err) {
-      toast.error(handleApiError(err));
-    } finally {
-      setUploading(false);
-    }
-  };
-
   // --- Submit ---
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -144,28 +128,31 @@ export default function ProductForm() {
 
     setSubmitting(true);
 
-    const formData = new FormData();
-    formData.append('name', form.name);
-    formData.append('description', form.description || '');
-    formData.append('isActive', form.isActive);
-    formData.append('isFeatured', form.isFeatured);
-    formData.append('categoryId', form.categoryId);
-    if (form.imageUrl) formData.append('imageUrl', form.imageUrl);
-
-    // Variants - ASP.NET Core indexed binding
-    variants.forEach((v, i) => {
-      formData.append(`Variants[${i}].SizeName`, v.sizeName);
-      formData.append(`Variants[${i}].Temperature`, v.temperature);
-      formData.append(`Variants[${i}].Price`, v.price);
-      formData.append(`Variants[${i}].IsAvailable`, v.isAvailable);
-    });
-
-    // Tags - ASP.NET Core indexed binding
-    tags.forEach((t, i) => {
-      formData.append(`Tags[${i}]`, t);
-    });
-
     try {
+      // Resolve ảnh trước khi submit
+      const resolvedImageUrl = await imageRef.current.resolve();
+
+      const formData = new FormData();
+      formData.append('name', form.name);
+      formData.append('description', form.description || '');
+      formData.append('isActive', form.isActive);
+      formData.append('isFeatured', form.isFeatured);
+      formData.append('categoryId', form.categoryId);
+      if (resolvedImageUrl) formData.append('imageUrl', resolvedImageUrl);
+
+      // Variants - ASP.NET Core indexed binding
+      variants.forEach((v, i) => {
+        formData.append(`Variants[${i}].SizeName`, v.sizeName);
+        formData.append(`Variants[${i}].Temperature`, v.temperature);
+        formData.append(`Variants[${i}].Price`, v.price);
+        formData.append(`Variants[${i}].IsAvailable`, v.isAvailable);
+      });
+
+      // Tags - ASP.NET Core indexed binding
+      tags.forEach((t, i) => {
+        formData.append(`Tags[${i}]`, t);
+      });
+
       if (isEdit) {
         await productService.update(productId, formData);
         toast.success('Cập nhật sản phẩm thành công');
@@ -239,34 +226,12 @@ export default function ProductForm() {
             />
           </div>
 
-          {/* Image upload */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Hình ảnh</label>
-            {form.imageUrl ? (
-              <div className="relative w-40 h-40 rounded-lg overflow-hidden bg-gray-100">
-                <img src={form.imageUrl} alt="" className="w-full h-full object-cover" />
-                <button
-                  type="button"
-                  onClick={() => handleChange('imageUrl', '')}
-                  className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
-                >
-                  <X size={12} />
-                </button>
-              </div>
-            ) : (
-              <label className="flex flex-col items-center justify-center w-40 h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#c8a96e] transition-colors">
-                {uploading ? (
-                  <Loader2 size={24} className="animate-spin text-gray-400" />
-                ) : (
-                  <>
-                    <Upload size={24} className="text-gray-400 mb-2" />
-                    <span className="text-xs text-gray-500">Chọn ảnh</span>
-                  </>
-                )}
-                <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-              </label>
-            )}
-          </div>
+          {/* Image input */}
+          <ImageInput
+            ref={imageRef}
+            value={form.imageUrl}
+            uploadFn={uploadService.uploadProduct}
+          />
 
           {/* Toggles */}
           <div className="flex gap-6">

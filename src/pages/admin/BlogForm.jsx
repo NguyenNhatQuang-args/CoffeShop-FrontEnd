@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Upload, X, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import { blogService } from '../../services/blogService';
 import { uploadService } from '../../services/uploadService';
 import { useToast } from '../../hooks/useToast';
 import { handleApiError } from '../../utils/handleApiError';
 import { FormSkeleton } from '../../components/admin/Skeleton';
+import ImageInput from '../../components/admin/ImageInput';
 
 export default function BlogForm() {
   const { slug } = useParams();
@@ -15,8 +16,8 @@ export default function BlogForm() {
 
   const [loading, setLoading] = useState(isEdit);
   const [submitting, setSubmitting] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [postId, setPostId] = useState(null);
+  const imageRef = useRef();
   const [form, setForm] = useState({
     title: '',
     slug: '',
@@ -55,31 +56,18 @@ export default function BlogForm() {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    try {
-      const res = await uploadService.uploadBlog(file);
-      const url = res.data.data?.url ?? res.data.url ?? res.data;
-      handleChange('thumbnailUrl', url);
-      toast.success('Upload ảnh thành công');
-    } catch (err) {
-      toast.error(handleApiError(err));
-    } finally {
-      setUploading(false);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     try {
+      const resolvedImageUrl = await imageRef.current.resolve();
+      const payload = { ...form, thumbnailUrl: resolvedImageUrl || '' };
+
       if (isEdit) {
-        await blogService.update(postId, form);
+        await blogService.update(postId, payload);
         toast.success('Cập nhật bài viết thành công');
       } else {
-        await blogService.create(form);
+        await blogService.create(payload);
         toast.success('Thêm bài viết thành công');
       }
       navigate('/admin/blog');
@@ -150,27 +138,12 @@ export default function BlogForm() {
         </div>
 
         {/* Thumbnail */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Ảnh đại diện</label>
-          {form.thumbnailUrl ? (
-            <div className="relative w-48 h-32 rounded-lg overflow-hidden bg-gray-100">
-              <img src={form.thumbnailUrl} alt="" className="w-full h-full object-cover" />
-              <button
-                type="button"
-                onClick={() => handleChange('thumbnailUrl', '')}
-                className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
-              >
-                <X size={12} />
-              </button>
-            </div>
-          ) : (
-            <label className="flex items-center gap-2 px-4 py-2 border border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#c8a96e] text-sm text-gray-500 w-fit">
-              {uploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
-              {uploading ? 'Đang upload...' : 'Chọn ảnh'}
-              <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-            </label>
-          )}
-        </div>
+        <ImageInput
+          ref={imageRef}
+          value={form.thumbnailUrl}
+          uploadFn={uploadService.uploadBlog}
+          label="Ảnh đại diện"
+        />
 
         <label className="flex items-center gap-2 cursor-pointer">
           <input
