@@ -181,7 +181,11 @@ export default function Dashboard() {
                     </td>
                     <td className="py-3 px-2 text-gray-500">{p.categoryName || p.category}</td>
                     <td className="py-3 px-2 text-right text-[#c8a96e] font-medium">
-                      {p.price?.toLocaleString('vi-VN')} đ
+                      {p.minPrice != null
+                        ? p.minPrice === p.maxPrice
+                          ? `${p.minPrice.toLocaleString('vi-VN')} đ`
+                          : `${p.minPrice.toLocaleString('vi-VN')} - ${p.maxPrice.toLocaleString('vi-VN')} đ`
+                        : '—'}
                     </td>
                   </tr>
                 ))}

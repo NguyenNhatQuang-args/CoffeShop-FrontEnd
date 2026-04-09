@@ -50,17 +50,26 @@ export default function Products() {
   const toggleAvailability = useCallback(async (product) => {
     try {
       const formData = new FormData();
-      formData.append('isAvailable', !product.isAvailable);
+      formData.append('name', product.name);
+      formData.append('categoryId', product.categoryId);
+      formData.append('isActive', !product.isActive);
+      formData.append('isFeatured', product.isFeatured);
+      if (product.imageUrl) formData.append('imageUrl', product.imageUrl);
       await productService.update(product.id, formData);
-      toast.success(product.isAvailable ? 'Đã ẩn sản phẩm' : 'Đã hiện sản phẩm');
+      toast.success(product.isActive ? 'Đã ẩn sản phẩm' : 'Đã hiện sản phẩm');
       refetch();
     } catch (err) {
       toast.error(handleApiError(err));
     }
   }, [refetch, toast]);
 
-  const formatPrice = (price) =>
-    (price || 0).toLocaleString('vi-VN') + ' đ';
+  const formatPrice = (minPrice, maxPrice) => {
+    if (minPrice == null && maxPrice == null) return '—';
+    const min = (minPrice || 0).toLocaleString('vi-VN');
+    const max = (maxPrice || 0).toLocaleString('vi-VN');
+    if (minPrice === maxPrice) return `${min} đ`;
+    return `${min} - ${max} đ`;
+  };
 
   return (
     <div>
@@ -135,29 +144,33 @@ export default function Products() {
                           )}
                           <div>
                             <p className="font-medium text-gray-900">{p.name}</p>
-                            {p.tag && (
-                              <span className="text-[10px] font-bold px-2 py-0.5 bg-[#c8a96e]/20 text-[#c8a96e] rounded uppercase">
-                                {p.tag}
-                              </span>
+                            {p.tags?.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {p.tags.map((tag, i) => (
+                                  <span key={i} className="text-[10px] font-bold px-2 py-0.5 bg-[#c8a96e]/20 text-[#c8a96e] rounded uppercase">
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
                             )}
                           </div>
                         </div>
                       </td>
                       <td className="py-3 px-4 text-gray-500">{p.categoryName || '-'}</td>
                       <td className="py-3 px-4 text-right font-medium text-gray-900">
-                        {formatPrice(p.price)}
+                        {formatPrice(p.minPrice, p.maxPrice)}
                       </td>
                       <td className="py-3 px-4 text-center">
                         <button
                           onClick={() => toggleAvailability(p)}
                           className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                            p.isAvailable
+                            p.isActive
                               ? 'bg-green-50 text-green-700 hover:bg-green-100'
                               : 'bg-red-50 text-red-600 hover:bg-red-100'
                           }`}
                         >
-                          {p.isAvailable ? <Eye size={12} /> : <EyeOff size={12} />}
-                          {p.isAvailable ? 'Còn hàng' : 'Hết hàng'}
+                          {p.isActive ? <Eye size={12} /> : <EyeOff size={12} />}
+                          {p.isActive ? 'Hiển thị' : 'Đã ẩn'}
                         </button>
                       </td>
                       <td className="py-3 px-4">
