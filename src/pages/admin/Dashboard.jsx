@@ -6,6 +6,7 @@ import { categoryService } from '../../services/categoryService';
 import { blogService } from '../../services/blogService';
 import { storeService } from '../../services/storeService';
 import { CardSkeleton } from '../../components/admin/Skeleton';
+import { getImageUrl } from '../../utils/getImageUrl';
 
 const ACTIVITY_FEED = [
   { id: 1, text: 'Sản phẩm "Cappuccino" đã được cập nhật', time: '5 phút trước' },
@@ -175,7 +176,7 @@ export default function Dashboard() {
                   <tr key={p.id || p.slug} className="border-b border-gray-50 hover:bg-gray-50">
                     <td className="py-3 px-2 flex items-center gap-3">
                       {p.imageUrl && (
-                        <img src={p.imageUrl} alt="" className="w-10 h-10 rounded object-cover" />
+                        <img src={getImageUrl(p.imageUrl)} alt="" className="w-10 h-10 rounded object-cover" />
                       )}
                       <span className="font-medium text-gray-900">{p.name}</span>
                     </td>

@@ -6,7 +6,7 @@ export const ABOUT = {
   image2: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80",
   stats: [
     { number: 3, suffix: "+", label: "Năm kinh nghiệm" },
-    { number: 3, suffix: "", label: "Chi nhánh" },
+    { number: 2, suffix: "", label: "Chi nhánh" },
     { number: 20, suffix: "+", label: "Thức uống" },
     { number: 5, suffix: "k+", label: "Khách hàng" },
   ]

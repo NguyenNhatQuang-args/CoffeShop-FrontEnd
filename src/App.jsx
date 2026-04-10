@@ -5,6 +5,10 @@ import Layout from './components/layout/Layout';
 import AdminLayout from './components/admin/AdminLayout';
 import Home from './pages/Home';
 import Menu from './pages/Menu';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import BlogPublic from './pages/BlogPublic';
+import BlogDetail from './pages/BlogDetail';
 import AdminLogin from './pages/admin/AdminLogin';
 import Dashboard from './pages/admin/Dashboard';
 import Products from './pages/admin/Products';
@@ -24,9 +28,10 @@ function App() {
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               <Route path="menu" element={<Menu />} />
-              <Route path="about" element={<div className="min-h-screen pt-32 text-center text-2xl font-heading">Trang Giới Thiệu (Coming Soon)</div>} />
-              <Route path="blog" element={<div className="min-h-screen pt-32 text-center text-2xl font-heading">Trang Blog (Coming Soon)</div>} />
-              <Route path="lien-he" element={<div className="min-h-screen pt-32 text-center text-2xl font-heading">Trang Liên Hệ (Coming Soon)</div>} />
+              <Route path="about" element={<About />} />
+              <Route path="blog" element={<BlogPublic />} />
+              <Route path="blog/:slug" element={<BlogDetail />} />
+              <Route path="lien-he" element={<Contact />} />
               <Route path="*" element={<div className="min-h-screen pt-32 text-center text-2xl font-heading">404 - Không tìm thấy trang</div>} />
             </Route>
 

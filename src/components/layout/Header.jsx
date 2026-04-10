@@ -68,7 +68,7 @@ export default function Header() {
           {/* Logo */}
           <Link
             to="/"
-            className="animate-nav-item font-heading text-2xl font-bold tracking-wider text-primary"
+            className="animate-nav-item font-heading text-2xl font-bold tracking-wider text-primary text-orange-300"
           >
             Roxios Coffee
           </Link>

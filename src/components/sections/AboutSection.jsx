@@ -105,7 +105,7 @@ export default function AboutSection() {
                 <div key={index} className="flex flex-col">
                   <span
                     ref={(el) => statsRef.current[index] = el}
-                    className="font-heading text-4xl md:text-5xl font-bold text-secondary mb-2"
+                    className="font-serif text-4xl md:text-5xl font-bold text-secondary mb-2"
                   >
                     0{stat.suffix}
                   </span>

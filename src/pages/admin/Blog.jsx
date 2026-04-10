@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
 import { useBlog } from '../../hooks/useBlog';
 import { useToast } from '../../hooks/useToast';
+import { getImageUrl } from '../../utils/getImageUrl';
 import { TableSkeleton } from '../../components/admin/Skeleton';
 import ConfirmDialog from '../../components/admin/ConfirmDialog';
 
@@ -94,7 +95,7 @@ export default function Blog() {
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
                         {post.thumbnailUrl && (
-                          <img src={post.thumbnailUrl} alt="" className="w-12 h-8 rounded object-cover bg-gray-100" />
+                          <img src={getImageUrl(post.thumbnailUrl)} alt="" className="w-12 h-8 rounded object-cover bg-gray-100" />
                         )}
                         <div>
                           <p className="font-medium text-gray-900 truncate max-w-[300px]">{post.title}</p>

@@ -3,9 +3,13 @@ import { Link, useSearchParams } from 'react-router-dom';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Search, SlidersHorizontal, X, Grid3X3, List, ChevronDown, Coffee } from 'lucide-react';
-import { MENU_CATEGORIES, MENU_PRODUCTS } from '../constants/menuData';
+import {
+  Search, SlidersHorizontal, X, Grid3X3, List, ChevronDown, ChevronLeft, ChevronRight, Coffee, Loader2, RefreshCw,
+} from 'lucide-react';
+import useMenu from '../hooks/useMenu';
 import ProductModal from '../components/menu/ProductModal';
+import ProductCardSkeleton from '../components/ui/ProductCardSkeleton';
+import { getImageUrl } from '../utils/getImageUrl';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -23,11 +27,18 @@ export default function Menu() {
   const [searchParams] = useSearchParams();
   const initialCategory = searchParams.get('category') || 'all';
 
-  const [search, setSearch] = useState('');
-  const [activeCategory, setActiveCategory] = useState(initialCategory);
-  const [tempFilter, setTempFilter] = useState([]);
-  const [onlyAvailable, setOnlyAvailable] = useState(false);
-  const [sortBy, setSortBy] = useState('default');
+  const {
+    products,
+    categories,
+    total,
+    loading,
+    error,
+    filters,
+    setFilters,
+    retry,
+  } = useMenu();
+
+  const [searchInput, setSearchInput] = useState('');
   const [viewMode, setViewMode] = useState('grid');
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -37,52 +48,64 @@ export default function Menu() {
   const productsRef = useRef(null);
   const mobileDrawerRef = useRef(null);
 
-  // Sync category from URL params
+  // Sync category from URL params on mount
   useEffect(() => {
     const cat = searchParams.get('category');
-    if (cat) setActiveCategory(cat);
+    if (cat && cat !== filters.categorySlug) {
+      setFilters((prev) => ({ ...prev, categorySlug: cat, page: 1 }));
+    }
   }, [searchParams]);
 
-  // Hero animation
+  // Debounced search → sync searchInput into filters.search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFilters((prev) => {
+        if (prev.search === searchInput) return prev;
+        return { ...prev, search: searchInput, page: 1 };
+      });
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  // =================== GSAP ANIMATIONS ===================
+
   useGSAP(() => {
     gsap.from('.menu-hero-item', {
-      y: 30,
-      opacity: 0,
-      duration: 0.8,
-      stagger: 0.15,
-      ease: 'power2.out',
-      delay: 0.2,
+      y: 30, opacity: 0, duration: 0.8, stagger: 0.15, ease: 'power2.out', delay: 0.2,
     });
   }, { scope: heroRef });
 
-  // Sidebar animation
   useGSAP(() => {
     gsap.from(sidebarRef.current, {
-      x: -30,
-      opacity: 0,
-      duration: 0.6,
-      ease: 'power2.out',
-      delay: 0.3,
+      x: -30, opacity: 0, duration: 0.6, ease: 'power2.out', delay: 0.3,
     });
   }, { scope: sidebarRef });
 
-  // Product cards animation on mount
   useGSAP(() => {
-    gsap.from('.product-item', {
-      scrollTrigger: {
-        trigger: productsRef.current,
-        start: 'top 85%',
-        once: true,
-      },
-      y: 30,
-      opacity: 0,
-      duration: 0.5,
-      stagger: 0.06,
-      ease: 'power2.out',
-    });
-  }, { scope: productsRef });
+    if (!loading && products.length > 0) {
+      const cards = gsap.utils.toArray('.product-item');
+      if (cards.length === 0) return;
 
-  // Mobile drawer animation
+      gsap.fromTo(cards,
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          stagger: 0.08,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: productsRef.current,
+            start: 'top 90%',
+            end: 'bottom 10%',
+            toggleActions: 'play none none none',
+            once: true,
+          },
+        },
+      );
+    }
+  }, { scope: productsRef, dependencies: [loading, products] });
+
   useGSAP(() => {
     if (!mobileDrawerRef.current) return;
     if (mobileFilterOpen) {
@@ -92,70 +115,87 @@ export default function Menu() {
     }
   }, [mobileFilterOpen]);
 
-  // Filter logic
-  const filteredProducts = useMemo(() => {
-    let result = [...MENU_PRODUCTS];
-
-    if (activeCategory !== 'all') {
-      result = result.filter((p) => p.category === activeCategory);
-    }
-    if (search.trim()) {
-      const kw = search.toLowerCase().trim();
-      result = result.filter((p) => p.name.toLowerCase().includes(kw));
-    }
-    if (tempFilter.length > 0) {
-      result = result.filter((p) => tempFilter.some((t) => p.temps.includes(t)));
-    }
-    if (onlyAvailable) {
-      result = result.filter((p) => p.isAvailable);
-    }
-
-    switch (sortBy) {
-      case 'price-asc':
-        result.sort((a, b) => a.sizes[0].price - b.sizes[0].price);
-        break;
-      case 'price-desc':
-        result.sort((a, b) => b.sizes[0].price - a.sizes[0].price);
-        break;
-      case 'name-az':
-        result.sort((a, b) => a.name.localeCompare(b.name, 'vi'));
-        break;
-    }
-
-    return result;
-  }, [activeCategory, search, tempFilter, onlyAvailable, sortBy]);
-
-  const hasActiveFilter =
-    activeCategory !== 'all' || search.trim() || tempFilter.length > 0 || onlyAvailable;
-
-  const resetFilters = () => {
-    setSearch('');
-    setActiveCategory('all');
-    setTempFilter([]);
-    setOnlyAvailable(false);
-    setSortBy('default');
-  };
-
-  const toggleTemp = (t) => {
-    setTempFilter((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
-  };
-
   const animateCardsIn = useCallback(() => {
     requestAnimationFrame(() => {
       gsap.fromTo(
         '.product-item',
         { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.3, stagger: 0.04, ease: 'power2.out' }
+        { opacity: 1, y: 0, duration: 0.3, stagger: 0.04, ease: 'power2.out' },
       );
     });
   }, []);
 
-  // Re-animate cards when filters change
   useEffect(() => {
-    animateCardsIn();
-  }, [filteredProducts, viewMode, animateCardsIn]);
+    if (!loading && products.length > 0) {
+      animateCardsIn();
+      ScrollTrigger.refresh();
+    }
+  }, [products, viewMode, loading, animateCardsIn]);
 
-  // Sidebar content (shared between desktop & mobile)
+  // =================== FILTER HELPERS ===================
+
+  const allCategories = useMemo(
+    () => [{ id: 0, name: 'Tất cả', slug: 'all' }, ...categories],
+    [categories],
+  );
+
+  const hasActiveFilter =
+    filters.categorySlug !== 'all' || searchInput.trim() || filters.temps.length > 0 || filters.onlyAvailable;
+
+  const resetFilters = () => {
+    setSearchInput('');
+    setFilters({
+      search: '',
+      categorySlug: 'all',
+      temps: [],
+      onlyAvailable: false,
+      sortBy: 'default',
+      page: 1,
+      pageSize: 12,
+    });
+  };
+
+  const toggleTemp = (t) => {
+    setFilters((prev) => {
+      const temps = prev.temps.includes(t)
+        ? prev.temps.filter((x) => x !== t)
+        : [...prev.temps, t];
+      return { ...prev, temps, page: 1 };
+    });
+  };
+
+  const setCategory = (slug) => {
+    setFilters((prev) => ({ ...prev, categorySlug: slug, page: 1 }));
+    setMobileFilterOpen(false);
+  };
+
+  const setSortBy = (value) => {
+    setFilters((prev) => ({ ...prev, sortBy: value }));
+  };
+
+  const setOnlyAvailable = (val) => {
+    setFilters((prev) => ({ ...prev, onlyAvailable: val, page: 1 }));
+  };
+
+  // =================== PAGINATION ===================
+
+  const totalPages = Math.ceil(total / filters.pageSize) || 1;
+
+  const goToPage = (page) => {
+    setFilters((prev) => ({ ...prev, page }));
+    productsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  // =================== SIDEBAR CONTENT ===================
+
+  const categorySkeleton = (
+    <div className="flex flex-col gap-2">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="h-9 bg-primary/10 rounded animate-pulse" />
+      ))}
+    </div>
+  );
+
   const filterContent = (
     <div className="flex flex-col gap-8">
       {/* Search */}
@@ -168,8 +208,8 @@ export default function Menu() {
           <input
             type="text"
             placeholder="Tìm tên thức uống..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 border border-primary/10 rounded bg-bg text-sm focus:outline-none focus:border-secondary transition-colors"
           />
         </div>
@@ -180,25 +220,26 @@ export default function Menu() {
         <label className="text-xs font-bold uppercase tracking-wider text-text-muted mb-3 block">
           Danh mục
         </label>
-        <ul className="flex flex-col gap-1">
-          {MENU_CATEGORIES.map((cat) => (
-            <li key={cat.id}>
-              <button
-                onClick={() => {
-                  setActiveCategory(cat.slug);
-                  setMobileFilterOpen(false);
-                }}
-                className={`w-full text-left px-4 py-2.5 text-sm rounded transition-all duration-200 ${
-                  activeCategory === cat.slug
-                    ? 'text-secondary font-bold border-l-[3px] border-secondary bg-secondary/5 pl-[13px]'
-                    : 'text-text hover:pl-6 hover:text-secondary'
-                }`}
-              >
-                {cat.name}
-              </button>
-            </li>
-          ))}
-        </ul>
+        {categories.length === 0 && loading ? (
+          categorySkeleton
+        ) : (
+          <ul className="flex flex-col gap-1">
+            {allCategories.map((cat) => (
+              <li key={cat.id}>
+                <button
+                  onClick={() => setCategory(cat.slug)}
+                  className={`w-full text-left px-4 py-2.5 text-sm rounded transition-all duration-200 ${
+                    filters.categorySlug === cat.slug
+                      ? 'text-secondary font-bold border-l-[3px] border-secondary bg-secondary/5 pl-[13px]'
+                      : 'text-text hover:pl-6 hover:text-secondary'
+                  }`}
+                >
+                  {cat.name}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {/* Temperature filter */}
@@ -214,7 +255,7 @@ export default function Menu() {
             >
               <input
                 type="checkbox"
-                checked={tempFilter.includes(t)}
+                checked={filters.temps.includes(t)}
                 onChange={() => toggleTemp(t)}
                 className="w-4 h-4 accent-[#c8a96e] rounded"
               />
@@ -228,14 +269,14 @@ export default function Menu() {
       <div>
         <label className="flex items-center gap-3 cursor-pointer px-4 py-2 rounded hover:bg-bg-dark transition-colors">
           <div
-            onClick={() => setOnlyAvailable(!onlyAvailable)}
+            onClick={() => setOnlyAvailable(!filters.onlyAvailable)}
             className={`relative w-10 h-5 rounded-full transition-colors cursor-pointer ${
-              onlyAvailable ? 'bg-secondary' : 'bg-primary/20'
+              filters.onlyAvailable ? 'bg-secondary' : 'bg-primary/20'
             }`}
           >
             <div
               className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${
-                onlyAvailable ? 'translate-x-5' : 'translate-x-0.5'
+                filters.onlyAvailable ? 'translate-x-5' : 'translate-x-0.5'
               }`}
             />
           </div>
@@ -255,6 +296,156 @@ export default function Menu() {
     </div>
   );
 
+  // =================== RENDER PRODUCT CARD (grid) ===================
+
+  const renderGridCard = (product) => {
+    const price = product.minPrice;
+    const tag = product.tags?.[0] ?? null;
+
+    return (
+      <div key={product.id} className="product-item opacity-100 group">
+        {/* Image */}
+        <div className="relative aspect-[4/3] overflow-hidden rounded bg-bg-dark mb-4">
+          <img
+            src={getImageUrl(product.imageUrl)}
+            alt={product.name}
+            loading="lazy"
+            className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03] ${
+              !product.isActive ? 'grayscale' : ''
+            }`}
+          />
+          {tag && (
+            <span className="absolute top-3 left-3 bg-secondary text-primary text-[10px] font-bold px-2.5 py-1 uppercase tracking-wider rounded-sm">
+              {tag}
+            </span>
+          )}
+          {!product.isActive && (
+            <div className="absolute inset-0 bg-primary/50 flex items-center justify-center">
+              <span className="bg-primary/80 text-bg text-sm font-bold px-4 py-2 rounded">
+                Hết hàng
+              </span>
+            </div>
+          )}
+          {/* Hover overlay */}
+          <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-5">
+            <button
+              onClick={() => setSelectedProduct(product)}
+              className="translate-y-3 group-hover:translate-y-0 transition-transform duration-300 bg-bg text-primary text-sm font-medium px-5 py-2 rounded shadow-lg hover:bg-secondary hover:text-primary"
+            >
+              Xem chi tiết
+            </button>
+          </div>
+        </div>
+
+        {/* Info */}
+        <div>
+          <h3 className="font-heading text-lg font-semibold text-primary mb-1">
+            {product.name}
+          </h3>
+          <p className="text-sm text-text-muted truncate mb-2">
+            {product.description}
+          </p>
+          <div className="flex items-center justify-between">
+            <span className="text-secondary font-medium text-sm">
+              {price != null ? `Từ ${formatPrice(price)}` : ''}
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // =================== RENDER PRODUCT CARD (list) ===================
+
+  const renderListCard = (product) => {
+    const price = product.minPrice;
+    const tag = product.tags?.[0] ?? null;
+
+    return (
+      <div
+        key={product.id}
+        className="product-item opacity-100 group flex items-center gap-5 p-4 rounded border border-primary/5 hover:border-secondary/30 hover:shadow-sm transition-all"
+      >
+        {/* Thumbnail */}
+        <div className="relative w-[100px] h-[100px] shrink-0 overflow-hidden rounded bg-bg-dark">
+          <img
+            src={getImageUrl(product.imageUrl)}
+            alt={product.name}
+            loading="lazy"
+            className={`w-full h-full object-cover ${!product.isActive ? 'grayscale' : ''}`}
+          />
+          {!product.isActive && (
+            <div className="absolute inset-0 bg-primary/50 flex items-center justify-center">
+              <span className="text-bg text-[10px] font-bold">Hết hàng</span>
+            </div>
+          )}
+        </div>
+
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start gap-2 mb-1">
+            <h3 className="font-heading text-base font-semibold text-primary truncate">
+              {product.name}
+            </h3>
+            {tag && (
+              <span className="shrink-0 bg-secondary text-primary text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider rounded-sm">
+                {tag}
+              </span>
+            )}
+          </div>
+          <p className="text-sm text-text-muted truncate">{product.description}</p>
+        </div>
+
+        {/* Price & CTA */}
+        <div className="shrink-0 text-right flex flex-col items-end gap-2">
+          <span className="text-secondary font-medium text-sm whitespace-nowrap">
+            {price != null ? `Từ ${formatPrice(price)}` : ''}
+          </span>
+          <button
+            onClick={() => setSelectedProduct(product)}
+            className="text-xs font-medium text-primary border border-primary/20 px-3 py-1.5 rounded hover:bg-secondary hover:border-secondary hover:text-primary transition-colors"
+          >
+            Chi tiết
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // =================== PAGINATION COMPONENT ===================
+
+  const pagination = totalPages > 1 && (
+    <div className="flex items-center justify-center gap-2 mt-10">
+      <button
+        onClick={() => goToPage(filters.page - 1)}
+        disabled={filters.page <= 1}
+        className="p-2 rounded border border-primary/10 disabled:opacity-30 hover:border-secondary transition-colors"
+      >
+        <ChevronLeft size={16} />
+      </button>
+      {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+        <button
+          key={p}
+          onClick={() => goToPage(p)}
+          className={`w-9 h-9 rounded text-sm font-medium transition-colors ${
+            p === filters.page
+              ? 'bg-secondary text-primary'
+              : 'border border-primary/10 hover:border-secondary'
+          }`}
+        >
+          {p}
+        </button>
+      ))}
+      <button
+        onClick={() => goToPage(filters.page + 1)}
+        disabled={filters.page >= totalPages}
+        className="p-2 rounded border border-primary/10 disabled:opacity-30 hover:border-secondary transition-colors"
+      >
+        <ChevronRight size={16} />
+      </button>
+    </div>
+  );
+
   return (
     <>
       {/* =================== HERO =================== */}
@@ -270,7 +461,7 @@ export default function Menu() {
             THỰC ĐƠN
           </h1>
           <p className="menu-hero-item text-bg/80 text-base md:text-lg mb-6">
-            Khám phá hơn 18 thức uống tinh tế
+            Khám phá hơn {total || '…'} thức uống tinh tế
           </p>
           <nav className="menu-hero-item flex items-center justify-center gap-2 text-sm text-bg/60">
             <Link to="/" className="hover:text-secondary transition-colors">
@@ -300,14 +491,15 @@ export default function Menu() {
               <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
                 <p className="text-sm text-text-muted">
                   Đang hiển thị{' '}
-                  <span className="font-bold text-primary">{filteredProducts.length}</span> sản phẩm
+                  <span className="font-bold text-primary">{products.length}</span>{' '}
+                  / {total} sản phẩm
                 </p>
 
                 <div className="flex items-center gap-3">
                   {/* Sort */}
                   <div className="relative">
                     <select
-                      value={sortBy}
+                      value={filters.sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
                       className="appearance-none bg-bg border border-primary/10 rounded pl-3 pr-8 py-2 text-sm focus:outline-none focus:border-secondary cursor-pointer"
                     >
@@ -349,8 +541,33 @@ export default function Menu() {
                 </div>
               </div>
 
-              {/* Products */}
-              {filteredProducts.length === 0 ? (
+              {/* Error banner */}
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded flex items-center justify-between">
+                  <p className="text-sm text-red-700">
+                    Không thể tải dữ liệu. Vui lòng thử lại.
+                  </p>
+                  <button
+                    onClick={retry}
+                    className="flex items-center gap-1.5 text-sm font-medium text-red-700 hover:text-red-900 transition-colors"
+                  >
+                    <RefreshCw size={14} />
+                    Thử lại
+                  </button>
+                </div>
+              )}
+
+              {/* Loading skeleton */}
+              {loading ? (
+                <div className="relative">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <ProductCardSkeleton key={i} />
+                    ))}
+                  </div>
+                </div>
+              ) : products.length === 0 ? (
+                /* Empty state */
                 <div className="flex flex-col items-center justify-center py-24 text-center">
                   <Coffee size={48} className="text-text-muted/40 mb-6" />
                   <p className="font-heading text-xl text-primary mb-2">
@@ -369,134 +586,17 @@ export default function Menu() {
               ) : viewMode === 'grid' ? (
                 /* ---- GRID VIEW ---- */
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {filteredProducts.map((product) => (
-                    <div key={product.id} className="product-item group">
-                      {/* Image */}
-                      <div className="relative aspect-[4/3] overflow-hidden rounded bg-bg-dark mb-4">
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          loading="lazy"
-                          className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03] ${
-                            !product.isAvailable ? 'grayscale' : ''
-                          }`}
-                        />
-                        {product.tag && (
-                          <span className="absolute top-3 left-3 bg-secondary text-primary text-[10px] font-bold px-2.5 py-1 uppercase tracking-wider rounded-sm">
-                            {product.tag}
-                          </span>
-                        )}
-                        {!product.isAvailable && (
-                          <div className="absolute inset-0 bg-primary/50 flex items-center justify-center">
-                            <span className="bg-primary/80 text-bg text-sm font-bold px-4 py-2 rounded">
-                              Hết hàng
-                            </span>
-                          </div>
-                        )}
-                        {/* Hover overlay */}
-                        <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-5">
-                          <button
-                            onClick={() => setSelectedProduct(product)}
-                            className="translate-y-3 group-hover:translate-y-0 transition-transform duration-300 bg-bg text-primary text-sm font-medium px-5 py-2 rounded shadow-lg hover:bg-secondary hover:text-primary"
-                          >
-                            Xem chi tiết
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Info */}
-                      <div>
-                        <h3 className="font-heading text-lg font-semibold text-primary mb-1">
-                          {product.name}
-                        </h3>
-                        <p className="text-sm text-text-muted truncate mb-2">
-                          {product.description}
-                        </p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-secondary font-medium text-sm">
-                            Từ {formatPrice(product.sizes[0].price)}
-                          </span>
-                          <div className="flex gap-1.5">
-                            {product.temps.map((t) => (
-                              <span
-                                key={t}
-                                className="text-[10px] font-medium px-2 py-0.5 rounded-full border border-primary/10 text-text-muted"
-                              >
-                                {t}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                  {products.map(renderGridCard)}
                 </div>
               ) : (
                 /* ---- LIST VIEW ---- */
                 <div className="flex flex-col gap-4">
-                  {filteredProducts.map((product) => (
-                    <div
-                      key={product.id}
-                      className="product-item group flex items-center gap-5 p-4 rounded border border-primary/5 hover:border-secondary/30 hover:shadow-sm transition-all"
-                    >
-                      {/* Thumbnail */}
-                      <div className="relative w-[100px] h-[100px] shrink-0 overflow-hidden rounded bg-bg-dark">
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          loading="lazy"
-                          className={`w-full h-full object-cover ${
-                            !product.isAvailable ? 'grayscale' : ''
-                          }`}
-                        />
-                        {!product.isAvailable && (
-                          <div className="absolute inset-0 bg-primary/50 flex items-center justify-center">
-                            <span className="text-bg text-[10px] font-bold">Hết hàng</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start gap-2 mb-1">
-                          <h3 className="font-heading text-base font-semibold text-primary truncate">
-                            {product.name}
-                          </h3>
-                          {product.tag && (
-                            <span className="shrink-0 bg-secondary text-primary text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider rounded-sm">
-                              {product.tag}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-text-muted truncate">{product.description}</p>
-                        <div className="flex gap-1.5 mt-1.5">
-                          {product.temps.map((t) => (
-                            <span
-                              key={t}
-                              className="text-[10px] font-medium px-2 py-0.5 rounded-full border border-primary/10 text-text-muted"
-                            >
-                              {t}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Price & CTA */}
-                      <div className="shrink-0 text-right flex flex-col items-end gap-2">
-                        <span className="text-secondary font-medium text-sm whitespace-nowrap">
-                          Từ {formatPrice(product.sizes[0].price)}
-                        </span>
-                        <button
-                          onClick={() => setSelectedProduct(product)}
-                          className="text-xs font-medium text-primary border border-primary/20 px-3 py-1.5 rounded hover:bg-secondary hover:border-secondary hover:text-primary transition-colors"
-                        >
-                          Chi tiết
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                  {products.map(renderListCard)}
                 </div>
               )}
+
+              {/* Pagination */}
+              {!loading && pagination}
             </div>
           </div>
         </div>

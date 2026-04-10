@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Plus, Search, Edit2, Trash2, Eye, EyeOff } from 'lucide-react';
 import { useProducts } from '../../hooks/useProducts';
 import { useCategories } from '../../hooks/useCategories';
+import { getImageUrl } from '../../utils/getImageUrl';
 import { useToast } from '../../hooks/useToast';
 import { handleApiError } from '../../utils/handleApiError';
 import { productService } from '../../services/productService';
@@ -140,7 +141,7 @@ export default function Products() {
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">
                           {p.imageUrl && (
-                            <img src={p.imageUrl} alt="" className="w-12 h-12 rounded-lg object-cover bg-gray-100" />
+                            <img src={getImageUrl(p.imageUrl)} alt="" className="w-12 h-12 rounded-lg object-cover bg-gray-100" />
                           )}
                           <div>
                             <p className="font-medium text-gray-900">{p.name}</p>

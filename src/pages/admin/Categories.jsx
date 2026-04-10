@@ -7,6 +7,7 @@ import { uploadService } from '../../services/uploadService';
 import { TableSkeleton } from '../../components/admin/Skeleton';
 import ConfirmDialog from '../../components/admin/ConfirmDialog';
 import ImageInput from '../../components/admin/ImageInput';
+import { getImageUrl } from '../../utils/getImageUrl';
 
 export default function Categories() {
   const { categories, loading, actionLoading, createCategory, updateCategory, deleteCategory } = useCategories();
@@ -112,7 +113,7 @@ export default function Categories() {
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
                         {cat.imageUrl && (
-                          <img src={cat.imageUrl} alt="" className="w-10 h-10 rounded-lg object-cover bg-gray-100" />
+                          <img src={getImageUrl(cat.imageUrl)} alt="" className="w-10 h-10 rounded-lg object-cover bg-gray-100" />
                         )}
                         <span className="font-medium text-gray-900">{cat.name}</span>
                       </div>
